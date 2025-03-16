@@ -14,8 +14,7 @@ Ensure you have **Node.js (>=14.x)** installed. Then follow these steps:
 
 ```sh
 # Clone the repository
-git clone <your-repo-url>
-cd PwC-DataFlow
+git clone https://github.com/anik8talekar/Compliance-Training-Cypress-Automation.git
 
 # Install dependencies
 npm install
