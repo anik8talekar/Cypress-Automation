@@ -1,0 +1,31 @@
+class AppkitScheduleManagementLocators{
+ADMIN = "//span[contains(text(),'Admin')]"
+ADMIN_TABS = "//div[@class='engagements-container__toolbar__actions']"
+SCHEDULE_MANAGEMENT_BTN = "//div[contains(text(),'Schedule Management')]"
+MANAGE_SCHEDULE_DATA_BTN = "//span[contains(text(),'Manage Schedule Data')]"
+SCHEDULE_MANAGEMENT_PAGE = "//mezz-schedule-management-grid[@class='schedule-management-page__grid']"
+MIGRATE_SCHEDULE_DATA_BTN = "//span[contains(text(),'Migrate Schedule Data')]"
+MIGRATE_SCHEDULE_PAGE = "//mezz-schedule-management-grid[@class='migrate-schedule-page__grid']"
+SEARCH_JURISDICTION = "//tr[@class='dx-row dx-column-lines dx-datagrid-filter-row']//td[@aria-colindex='4']"
+JURISDICTION_VALUE = "//tr[@aria-rowindex='1']//td[@aria-colindex='4']"
+SEARCH_SCHEDULE = "//tr[@class='dx-row dx-column-lines dx-datagrid-filter-row']//td[@aria-colindex='5']//input"
+SCHEDULE_VALUE = "//tr[@aria-rowindex='1']//td[@aria-colindex='5']"
+SEARCH_TAX_YRAR = "//tr[@class='dx-row dx-column-lines dx-datagrid-filter-row']//td[@aria-colindex='6']"
+TEAX_YEAR_VALUE = "//tr[@aria-rowindex='1']//td[@aria-colindex='6']"
+SEARCH_SCHEDULE_ITEM_COUNT = "//tr[@class='dx-row dx-column-lines dx-datagrid-filter-row']//td[@aria-colindex='7']"
+SCHEDULE_ITEM_COUNT_VALUE = "//tr[@aria-rowindex='1']//td[@aria-colindex='7']"
+SEARCH_SCHEDULE_ITEM_DETAIL_COUNT = "//tr[@class='dx-row dx-column-lines dx-datagrid-filter-row']//td[@aria-colindex='8']"
+SCHEDULE_ITEM_DETAIL_COUNT_VALUE = "//tr[@aria-rowindex='1']//td[@aria-colindex='8']"
+SEARCH_SCHEDULE_ITEM_OTHER_COUNT = "//tr[@class='dx-row dx-column-lines dx-datagrid-filter-row']//td[@aria-colindex='9']"
+SCHEDULE_ITEM_OTHER_COUNT_VALUE = "//tr[@aria-rowindex='1']//td[@aria-colindex='9']"
+SEARCH_TOTAL_MAPPING_COUNT = "//tr[@class='dx-row dx-column-lines dx-datagrid-filter-row']//td[@aria-colindex='10']"
+TOTAL_MAPPING_COUNT_VALUE = "//tr[@aria-rowindex='1']//td[@aria-colindex='10']"
+SEARCH_MAPPING_PROFILE_COUNT = "//tr[@class='dx-row dx-column-lines dx-datagrid-filter-row']//td[@aria-colindex='11']"
+MAPPING_PROFILE_COUNT_VALUE = "//tr[@aria-rowindex='1']//td[@aria-colindex='11']"
+SEARCH_MIGRATION_STATUS = "//tr[@class='dx-row dx-column-lines dx-datagrid-filter-row']//td[@aria-colindex='12']"
+MIGRATION_STATUS_VALUE = "//tr[@aria-rowindex='1']//td[@aria-colindex='12']"
+FOOTER = '//mezz-footer'
+MANAGE_SCHEDULE_DATA_UI = "//div[@class='schedule-management-page appkit-page']"
+}
+
+export default AppkitScheduleManagementLocators;

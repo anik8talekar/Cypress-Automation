@@ -1,0 +1,27 @@
+class Form8621Locators{
+    ADD_DESTINATION = "//mezz-add-row-button[@label='Add Destination']"
+    TYPE_EMAIL = "//input[@formcontrolname='email']"
+    GOSYSTEM_TOGGLE_BUTTON = ".trux-switch__content"
+    USER_DROPDOWN = "svg[data-icon='chevron-down']"
+    VIEW_BY_DROPDOWN = "//div[@class='review-toolbar__view-by']//trux-input[@type='select']"
+    EXPORT_TO_GOSYSTEM_BUTTON = "svg[data-icon='file-export']"
+    SCHEDULE_DROPDOWN = ".dx-dropdowneditor-icon"
+    PART_VII = "(//div[@class='trux-tabs trux-tabs--vertical ng-star-inserted']//following::a[contains(text(),'VII')])[1]"
+    SECTION_2 = "//a[contains(text(),' Section 2 ')]"
+    INSTANCES_8621_1 = "//tr[@aria-rowindex='1' ]//div[@aria-label='Select row']"
+    INSTANCES_8621_2 = "//tr[@aria-rowindex='2' ]//div[@aria-label='Select row']"
+    INSTANCES_8621_3 = "//tr[@aria-rowindex='3' ]//div[@aria-label='Select row']"
+    EXECUTIVE_REVIEW_CHECKBOX_4 = "(//td[contains(text(),'SITWELL COMPANY')]//ancestor::tr[@role='row']//span[@class='dx-checkbox-icon'])[1]"
+    DETAILS_BUTTON = "//span[contains(text(),'Details')]"
+    EXECUTIVE_REVIEW_8621 = "//a[contains(text(),' 8621 ')]"
+    DELETE_ICON = "svg[data-icon='trash']"
+    EXPORT_TO_GOSYSTEM_BUTTON_FEDK1 = "div>fa-icon>svg[data-icon='file-export']"
+    DESTINATION_DROPDOWN = "//label[contains(text(),'Destination')]//following::input[@placeholder='Select...']"
+    SELECT_FEDK3_DOC = "//tr[@aria-rowindex='3']//a[@awmtooltip='Review']"
+    EXECUTIVE_REVIEW_SCROLLBAR = "div[class=dx-scrollable-scroll-content]"
+    SCHEDULE_DROPDOWN_EXECUTIVE_REVIEW = "//input[@placeholder='Select...']"
+    RESET_GRID = "//span[contains(text(),'Reset Grid')]"
+    SEARCH_INVESTMENT_NAME = "(//div[@class='dx-editor-with-menu']//input[@type='text'])[1]"
+}
+
+export default Form8621Locators;

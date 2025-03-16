@@ -1,0 +1,33 @@
+class CutoffAnalyzerLocators{
+    SHOW_DETAILS_CUTOFF = "//a[@routerlink='cutoff-data']"
+    VERIFY_CHART = ".trux-chart__chart-canvas"
+    VERIFY_NO_OF_DOC = ".cutoff-data-legend__element-text"
+    VERIFY_DATES_ROW = "td[role='columnheader']"
+    INVESTOR_DROPDOWN = "input[placeholder='Select...']"
+    CUTOFF_DATE = "svg[data-icon='calendar-days']"
+    InputDate = "input[placeholder='Choose a date']"
+    CHANGE_CALENDAR_YEAR = "svg[data-icon='chevron-left']"
+    SEARCH_NAME_FIELD = "//trux-input[@formcontrolname='name']"
+    SAVE_BUTTON_SEARCH_NAME_SLIDEOUT = ".trux-slideout-footer"
+    VERIFY_SAVED_CUTOFF = ".trux-list__scrollable-viewport"
+    DELETE_SAVED_CUTOFF_ICON = "svg[data-icon='trash']"
+    VERIFY_CUTOFF_DATE_EXPECTED_DOCUMENTS = ".expected-documents-page"
+    DELETE_POPUP = ".trux-notification__actions ng-star-inserted"
+    VERIFY_CHANGED_TAX_YEAR = ".trux-list__item--selected"
+    EMPTY_SAVED_CUTOFF = ".cutoff-data-filters-container__saved-search-list__item--text"
+    EMPTY_INVESTOR = ".trux-checkbox__label"
+    EMPTY_INVESTMENT = ".trux-list__item trux-list__item--level- ng-star-inserted"
+    EMPTY_CUTOFF_DATE = ".ng-tns-c42-153 ng-star-inserted"
+    VERIFY_LINECHART = ".cutoff-data-legend"
+    VERIFY_DOUGHNUT_CHART = ".cutoff-data-doughnut-container__chart-header"
+    CLOSE_ICON = ".trux-slideout-header__close-btn"
+    RECALCULATION_STARTED_POPUP = ".trux-notification__content"
+    RECALCULATION_STARTED_TEXT = ".trux-notification__title"
+    RECALCULATION_STARTED_PROCESS = ".trux-notification__body"
+    CUTOFF_DATE_CALENDER = '.trux-overlay'
+    EXPECTED_DOCUMENTS_TAB = "//a[contains(text(),' Expected Documents ')]"
+    SEARCH_CUT_OFF_DATE = "//td[@aria-colindex='13'][@aria-label='Filter cell']"
+    TAX_YEAR_ALL = "//div[contains(text(),'(All)')]"
+    
+}
+export default CutoffAnalyzerLocators;

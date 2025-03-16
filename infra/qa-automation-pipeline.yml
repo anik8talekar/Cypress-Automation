@@ -1,0 +1,569 @@
+name: $(date:yyyyMMdd)$(rev:.r)
+trigger:
+  branches:
+    include:
+      - "develop"
+
+schedules:
+  - cron: "30 5 * * *" # Daily at 11:00 am IST (5:30 am UTC)
+    displayName: "Daily QA Env Trigger"
+    branches:
+      include:
+        - "develop"
+    always: true
+
+variables:
+  - group: "PwC.Mezzanine - Shared"
+  - group: "PwC.QAAutomation - QA"
+
+stages:
+- stage: QA_Tests
+  dependsOn: 
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/develop'))
+  jobs:
+  - job: FeatureSet1Tests
+    displayName: Run Feature Set 1 Tests
+    timeoutInMinutes: 240
+    pool:
+      name: "TaxTech Pipelines PaaS - Windows"
+      demands:
+        - java
+        - JAVA_HOME
+        - npm
+    steps:
+      - checkout: self
+      - task: NodeTool@0
+        displayName: "Install Node.js"
+        inputs:
+          versionSpec: "16.x"
+      - task: CacheBeta@1
+        displayName: Cache NPM packages
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: $(Build.SourcesDirectory)/package-lock.json
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: CacheBeta@1
+        displayName: Cache Cypress Binary
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: /home/vsts/.cache/.npm
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: Npm@1
+        displayName: "npm ci"
+        inputs:
+          command: ci
+          workingDir: "$(Build.SourcesDirectory)/cypress"
+      - task: FileTransform@2
+        displayName: 'Replace config values'
+        inputs: 
+          folderPath: '$(Build.SourcesDirectory)'
+          jsonTargetFiles: 'cypress.env.json'
+          xmlTransformationRules: ''
+      - task: PowerShell@2
+        displayName: "Set Cert Password File"
+        inputs:
+          targetType: 'filePath'
+          arguments: -buildFolder $(Build.SourcesDirectory) -certPassword $(certPassword)
+          filePath: $(Build.SourcesDirectory)/infra/write-cert-pass-file.ps1
+      - script: 'npx cypress run --spec "cypress/e2e/specs/featureSet1/*.{feature,features}" --headed --browser electron --env baseURL=https://dataflow-qa.pwcinternal.com/ --reporter cypress-multi-reporters --reporter-options configFile=reporter-config.json'
+        workingDirectory: "$(Build.SourcesDirectory)/"
+        continueOnError: true
+        displayName: "Run Cypress Feature Set 1"
+        env:
+          BUILD_ID: $(Build.BuildId)
+
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet1 json files"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet1"
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet1 reports"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/reports"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet1/reports"
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet1 screnshots"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/screenshots"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet1/screenshots"
+          
+      - task: PublishBuildArtifacts@1
+        condition: always()
+        displayName: "Publish cucumber-json folder"
+        inputs:
+          ArtifactName: featureSet1-Json-files
+          PathtoPublish: "$(build.artifactstagingdirectory)/featureSet1"
+
+  - job: FeatureSet2Tests
+    displayName: Run Feature Set 2 Tests
+    timeoutInMinutes: 240
+    pool:
+      name: "TaxTech Pipelines PaaS - Windows"
+      demands:
+        - java
+        - JAVA_HOME
+        - npm
+    steps:
+      - checkout: self
+      - task: NodeTool@0
+        displayName: "Install Node.js"
+        inputs:
+          versionSpec: "16.x"
+      - task: CacheBeta@1
+        displayName: Cache NPM packages
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: $(Build.SourcesDirectory)/package-lock.json
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: CacheBeta@1
+        displayName: Cache Cypress Binary
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: /home/vsts/.cache/.npm
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: Npm@1
+        displayName: "npm ci"
+        inputs:
+          command: ci
+          workingDir: "$(Build.SourcesDirectory)/cypress"
+      - task: FileTransform@2
+        displayName: 'Replace config values'
+        inputs: 
+          folderPath: '$(Build.SourcesDirectory)'
+          jsonTargetFiles: 'cypress.env.json'
+          xmlTransformationRules: ''
+      - task: PowerShell@2
+        displayName: "Set Cert Password File"
+        inputs:
+          targetType: 'filePath'
+          arguments: -buildFolder $(Build.SourcesDirectory) -certPassword $(certPassword)
+          filePath: $(Build.SourcesDirectory)/infra/write-cert-pass-file.ps1
+      - script: 'npx cypress run --spec "cypress/e2e/specs/featureSet2/*.{feature,features}" --headed --browser electron --env baseURL=https://dataflow-qa.pwcinternal.com/ --reporter cypress-multi-reporters --reporter-options configFile=reporter-config.json'
+        workingDirectory: "$(Build.SourcesDirectory)/"
+        continueOnError: true
+        displayName: "Run Cypress Feature Set 2"
+        env:
+          BUILD_ID: $(Build.BuildId)
+
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet2 json files"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet2"
+      
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet2 reports"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/reports"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet2/reports"
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet2 screenshots"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/screenshots"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet2/screenshots"
+
+      - task: PublishBuildArtifacts@1
+        condition: always()
+        displayName: "Publish cucumber-json folder"
+        inputs:
+          ArtifactName: featureSet2-Json-files
+          PathtoPublish: "$(build.artifactstagingdirectory)/featureSet2"
+
+  - job: PublishCucumberHTMLReport
+    displayName: Publish HTML Report
+    pool:
+      name: "TaxTech Pipelines PaaS - Windows"
+      demands:
+        - java
+        - JAVA_HOME
+        - npm
+    dependsOn: 
+       - FeatureSet1Tests
+       - FeatureSet2Tests
+    condition: always()
+    steps:
+      - checkout: self
+      - task: NodeTool@0
+        displayName: "Install Node.js"
+        inputs:
+          versionSpec: "16.x"
+      - task: CacheBeta@1
+        displayName: Cache NPM packages
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: $(Build.SourcesDirectory)/package-lock.json
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: CacheBeta@1
+        displayName: Cache Cypress Binary
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: /home/vsts/.cache/.npm
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: Npm@1
+        displayName: "npm ci"
+        inputs:
+          command: ci
+          workingDir: "$(Build.SourcesDirectory)/cypress"
+
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: featureSet1-Json-files
+          downloadPath: '$(Build.SourcesDirectory)/cypress/cucumber-json'
+
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: featureSet2-Json-files
+          downloadPath: '$(Build.SourcesDirectory)/cypress/cucumber-json'
+
+      - script: 'node ./cypress/cucumberReport.js'
+        workingDirectory: "$(Build.SourcesDirectory)"
+        continueOnError: true
+        displayName: "Generate HTML Report"
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy HTML Report"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumberHTMLReport"
+          Contents: "**/*"
+          TargetFolder: "$(build.artifactstagingdirectory)/cypress-html-report"
+          
+      - task: PublishTestResults@2
+        condition: always()
+        displayName: "Publish Test Results **/junit/results-*.xml"
+        continueOnError: true
+        inputs:
+          testResultsFiles: "**/junit/results-*.xml"
+          searchFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json"
+      
+      - task: PublishBuildArtifacts@1
+        condition: always()
+        displayName: "Publish HTML Report"
+        inputs:
+          ArtifactName: CypressHTMLReport-QA
+          PathtoPublish: "$(build.artifactstagingdirectory)/cypress-html-report"
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy Screenshots of FS1"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json/featureSet1-Json-files/screenshots"
+          TargetFolder: "$(build.artifactstagingdirectory)/screenshots"
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy Screenshots of FS2"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json/featureSet2-Json-files/screenshots"
+          TargetFolder: "$(build.artifactstagingdirectory)/screenshots"
+
+      - task: PublishBuildArtifacts@1
+        condition: always()
+        displayName: "Publish Artifact: Attachments"
+        inputs:
+          ArtifactName: Screenshots-QA
+          PathtoPublish: "$(build.artifactstagingdirectory)/screenshots"
+
+
+- stage: Stage_Tests
+  dependsOn: 
+  condition: eq(variables['Build.Reason'], 'Manual') # Only runs if manually triggered
+  jobs:
+  - job: FeatureSet1Tests
+    displayName: Run Feature Set 1 Tests
+    timeoutInMinutes: 240
+    pool:
+      name: "TaxTech Pipelines PaaS - Windows"
+      demands:
+        - java
+        - JAVA_HOME
+        - npm
+    steps:
+      - checkout: self
+      - task: NodeTool@0
+        displayName: "Install Node.js"
+        inputs:
+          versionSpec: "16.x"
+      - task: CacheBeta@1
+        displayName: Cache NPM packages
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: $(Build.SourcesDirectory)/package-lock.json
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: CacheBeta@1
+        displayName: Cache Cypress Binary
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: /home/vsts/.cache/.npm
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: Npm@1
+        displayName: "npm ci"
+        inputs:
+          command: ci
+          workingDir: "$(Build.SourcesDirectory)/cypress"
+      - task: FileTransform@2
+        displayName: 'Replace config values'
+        inputs: 
+          folderPath: '$(Build.SourcesDirectory)'
+          jsonTargetFiles: 'cypress.env.json'
+          xmlTransformationRules: ''
+      - task: PowerShell@2
+        displayName: "Set Cert Password File"
+        inputs:
+          targetType: 'filePath'
+          arguments: -buildFolder $(Build.SourcesDirectory) -certPassword $(certPassword)
+          filePath: $(Build.SourcesDirectory)/infra/write-cert-pass-file.ps1
+      - script: 'npx cypress run --spec "cypress/e2e/specs/featureSet1/*.{feature,features}" --headed --browser electron --env baseURL=https://dataflow-stg.pwc.com/ --reporter cypress-multi-reporters --reporter-options configFile=reporter-config.json'
+        workingDirectory: "$(Build.SourcesDirectory)/"
+        continueOnError: true
+        displayName: "Run Cypress Feature Set 1"
+        env:
+          BUILD_ID: $(Build.BuildId)
+
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet1 json files"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet1"
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet1 reports"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/reports"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet1/reports"
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet1 screnshots"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/screenshots"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet1/screenshots"
+
+      - task: PublishBuildArtifacts@1
+        condition: always()
+        displayName: "Publish cucumber-json folder"
+        inputs:
+          ArtifactName: featureSet1-Json-files
+          PathtoPublish: "$(build.artifactstagingdirectory)/featureSet1"
+
+  - job: FeatureSet2Tests
+    displayName: Run Feature Set 2 Tests
+    timeoutInMinutes: 240
+    pool:
+      name: "TaxTech Pipelines PaaS - Windows"
+      demands:
+        - java
+        - JAVA_HOME
+        - npm
+    steps:
+      - checkout: self
+      - task: NodeTool@0
+        displayName: "Install Node.js"
+        inputs:
+          versionSpec: "16.x"
+      - task: CacheBeta@1
+        displayName: Cache NPM packages
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: $(Build.SourcesDirectory)/package-lock.json
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: CacheBeta@1
+        displayName: Cache Cypress Binary
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: /home/vsts/.cache/.npm
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: Npm@1
+        displayName: "npm ci"
+        inputs:
+          command: ci
+          workingDir: "$(Build.SourcesDirectory)/cypress"
+      - task: FileTransform@2
+        displayName: 'Replace config values'
+        inputs: 
+          folderPath: '$(Build.SourcesDirectory)'
+          jsonTargetFiles: 'cypress.env.json'
+          xmlTransformationRules: ''
+      - task: PowerShell@2
+        displayName: "Set Cert Password File"
+        inputs:
+          targetType: 'filePath'
+          arguments: -buildFolder $(Build.SourcesDirectory) -certPassword $(certPassword)
+          filePath: $(Build.SourcesDirectory)/infra/write-cert-pass-file.ps1
+      - script: 'npx cypress run --spec "cypress/e2e/specs/featureSet2/*.{feature,features}" --headed --browser electron --env baseURL=https://dataflow-stg.pwc.com/ --reporter cypress-multi-reporters --reporter-options configFile=reporter-config.json'
+        workingDirectory: "$(Build.SourcesDirectory)/"
+        continueOnError: true
+        displayName: "Run Cypress Feature Set 2"
+        env:
+          BUILD_ID: $(Build.BuildId)
+
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet2 json files"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet2"
+      
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet2 reports"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/reports"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet2/reports"
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy FeatureSet2 screenshots"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/screenshots"
+          TargetFolder: "$(build.artifactstagingdirectory)/featureSet2/screenshots"
+
+      - task: PublishBuildArtifacts@1
+        condition: always()
+        displayName: "Publish cucumber-json folder"
+        inputs:
+          ArtifactName: featureSet2-Json-files
+          PathtoPublish: "$(build.artifactstagingdirectory)/featureSet2"
+
+  - job: PublishCucumberHTMLReport
+    displayName: Publish HTML Report
+    pool:
+      name: "TaxTech Pipelines PaaS - Windows"
+      demands:
+        - java
+        - JAVA_HOME
+        - npm
+    dependsOn: 
+       - FeatureSet1Tests
+       - FeatureSet2Tests
+    condition: always()
+    steps:
+      - checkout: self
+      - task: NodeTool@0
+        displayName: "Install Node.js"
+        inputs:
+          versionSpec: "16.x"
+      - task: CacheBeta@1
+        displayName: Cache NPM packages
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: $(Build.SourcesDirectory)/package-lock.json
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: CacheBeta@1
+        displayName: Cache Cypress Binary
+        inputs:
+          key: '"npm" | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
+          path: /home/vsts/.cache/.npm
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+      - task: Npm@1
+        displayName: "npm ci"
+        inputs:
+          command: ci
+          workingDir: "$(Build.SourcesDirectory)/cypress"
+
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: featureSet1-Json-files
+          downloadPath: '$(Build.SourcesDirectory)/cypress/cucumber-json'
+
+      - task: DownloadBuildArtifacts@1
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: featureSet2-Json-files
+          downloadPath: '$(Build.SourcesDirectory)/cypress/cucumber-json'
+
+      - script: 'node ./cypress/cucumberReport.js'
+        workingDirectory: "$(Build.SourcesDirectory)"
+        continueOnError: true
+        displayName: "Generate HTML Report"
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy HTML Report"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumberHTMLReport"
+          Contents: "**/*"
+          TargetFolder: "$(build.artifactstagingdirectory)/cypress-html-report"
+          
+      - task: PublishTestResults@2
+        condition: always()
+        displayName: "Publish Test Results **/junit/results-*.xml"
+        continueOnError: true
+        inputs:
+          testResultsFiles: "**/junit/results-*.xml"
+          searchFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json"
+      
+      - task: PublishBuildArtifacts@1
+        condition: always()
+        displayName: "Publish HTML Report"
+        inputs:
+          ArtifactName: CypressHTMLReport-Stage
+          PathtoPublish: "$(build.artifactstagingdirectory)/cypress-html-report"
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy Screenshots of FS1"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json/featureSet1-Json-files/screenshots"
+          TargetFolder: "$(build.artifactstagingdirectory)/screenshots"
+      
+      - task: CopyFiles@2
+        condition: always()
+        displayName: "Copy Screenshots of FS2"
+        continueOnError: true
+        inputs:
+          SourceFolder: "$(Build.SourcesDirectory)/cypress/cucumber-json/featureSet2-Json-files/screenshots"
+          TargetFolder: "$(build.artifactstagingdirectory)/screenshots"
+
+      - task: PublishBuildArtifacts@1
+        condition: always()
+        displayName: "Publish Artifact: Attachments"
+        inputs:
+          ArtifactName: Screenshots-Stage
+          PathtoPublish: "$(build.artifactstagingdirectory)/screenshots"
