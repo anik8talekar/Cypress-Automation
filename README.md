@@ -1,20 +1,84 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# PwC-DataFlow: Cypress Automation with BDD Framework
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+## 📌 Project Overview
+This project is an **end-to-end automation framework** built using **Cypress** with the **BDD (Behavior-Driven Development) framework**. It leverages **Cucumber** for writing feature files and uses **Cypress Multiple Cucumber HTML Reporter** for generating detailed test reports.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## 🚀 Tech Stack
+- **Cypress** - JavaScript-based end-to-end testing framework
+- **Cucumber (BDD)** - Gherkin syntax for writing test scenarios
+- **Cypress Multiple Cucumber HTML Reporter** - Generates HTML reports for better test analysis
+- **Node.js & npm** - Dependency management
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+## ⚙️ Installation & Setup
+Ensure you have **Node.js (>=14.x)** installed. Then follow these steps:
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+```sh
+# Clone the repository
+git clone <your-repo-url>
+cd PwC-DataFlow
+
+# Install dependencies
+npm install
+```
+
+## 🎯 Running Tests
+
+### **Run Tests in Headless Mode**
+```sh
+npm run test
+```
+
+### **Run Tests in Cypress UI**
+```sh
+npm run cypress:open
+```
+
+### **Run Tests & Generate HTML Reports**
+```sh
+npm run test:report
+```
+
+## 📝 Writing Test Cases (BDD)
+Test cases are written using the **Gherkin syntax** inside `.feature` files.
+
+#### **Example Feature File (`login.feature`)**
+```gherkin
+Feature: Login Functionality
+  Scenario: User logs in with valid credentials
+    Given I navigate to the login page
+    When I enter valid username and password
+    Then I should be redirected to the dashboard
+```
+
+#### **Step Definitions (`login.js`)**
+```js
+import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
+
+Given("I navigate to the login page", () => {
+  cy.visit("/login");
+});
+
+When("I enter valid username and password", () => {
+  cy.get("#username").type("testuser");
+  cy.get("#password").type("password123");
+  cy.get("#loginButton").click();
+});
+
+Then("I should be redirected to the dashboard", () => {
+  cy.url().should("include", "/dashboard");
+});
+```
+
+## 📊 Generating Test Reports
+This project uses **Cypress Multiple Cucumber HTML Reporter** to create detailed reports. Reports are automatically generated after running tests using:
+```sh
+npm run test:report
+```
+Reports can be found in the **`reports`** folder.
+
+## 🛠 CI/CD Integration
+This project can be integrated with CI/CD tools like **GitHub Actions, Jenkins, or Azure DevOps** to run tests automatically on code commits.
+
+---
+🚀 Happy Testing with **Cypress + BDD**! 🎯
+
